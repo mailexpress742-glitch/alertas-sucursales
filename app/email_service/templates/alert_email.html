@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Alertas inteligentes detectadas</title>
+  </head>
+  <body style="margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#1f2933;">
+    <div style="max-width:960px;margin:0 auto;padding:24px;">
+      <div style="background:#ffffff;border:1px solid #d9e2ec;border-radius:8px;padding:24px;">
+        <h1 style="margin:0 0 8px;font-size:24px;color:#102a43;">{{ mail_title }}</h1>
+        <p style="margin:0 0 20px;color:#52606d;">
+          Fecha de ejecucion: {{ generated_at.strftime("%Y-%m-%d %H:%M:%S %Z") }}
+        </p>
+
+        <div style="background:#eef6ff;border:1px solid #b6d4fe;border-radius:6px;padding:16px;margin-bottom:20px;">
+          <strong>Resumen ejecutivo</strong>
+          <p style="margin:8px 0 0;">
+            Se detectaron {{ total_alerts }} alerta(s) nueva(s) que requieren revision.
+            {% if summary.get("duplicates_skipped") %}
+              Se omitieron {{ summary.get("duplicates_skipped") }} alerta(s) ya enviadas previamente.
+            {% endif %}
+          </p>
+        </div>
+
+        {% for section in sections %}
+        <div style="margin-top:20px;">
+          <h2 style="margin:0 0 6px;font-size:18px;color:{{ section.color }};">
+            {{ section.title }} - {{ section.alerts|length }} alerta(s)
+          </h2>
+          <p style="margin:0 0 10px;color:#52606d;">{{ section.action }}</p>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px;">
+            <thead>
+              <tr style="background:{{ section.color }};color:#ffffff;">
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:13%;">Sucursal</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:17%;">Guia/retiro</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:12%;">Fecha pactada</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:7%;">Dias</th>
+                <th style="padding:10px;text-align:left;">Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for alert in section.alerts %}
+              <tr style="border-bottom:1px solid #d9e2ec;">
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.source }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.record_reference }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;white-space:nowrap;">{{ alert.metadata.get("fecha_pactada_date") or alert.metadata.get("fecha_pactada") or "-" }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;text-align:center;">{{ alert.metadata.get("days_until_due", "-") }}</td>
+                <td style="padding:10px;vertical-align:top;">{{ alert.description }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endfor %}
+
+        <p style="margin:24px 0 0;color:#627d98;font-size:13px;">
+          Este correo fue generado automaticamente por el sistema de alertas.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
