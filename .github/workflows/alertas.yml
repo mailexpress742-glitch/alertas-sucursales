@@ -46,6 +46,7 @@ jobs:
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}
       SUCURSAL_GROUPS_JSON: ${{ secrets.SUCURSAL_GROUPS_JSON }}
       ENVIRONMENT: github_actions
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout repository
