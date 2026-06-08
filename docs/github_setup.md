@@ -20,14 +20,19 @@ Ir a:
 Settings > Secrets and variables > Actions > New repository secret
 ```
 
-Crear estos secrets:
+Para la primera prueba en `dry-run`, el unico secret obligatorio es:
+
+```text
+DB_PASSWORD=valor_real_no_documentar
+```
+
+El workflow ya trae valores por defecto para base, destinatarios y reglas. Si luego se quiere sobreescribir algo desde GitHub, crear estos secrets opcionales:
 
 ```text
 DB_TYPE=mariadb
 DB_SERVER=mexreplica.epresis.com
 DB_NAME=mex_lv
 DB_USER=readonly_mex
-DB_PASSWORD=valor_real_no_documentar
 DB_PORT=3345
 DB_DRIVER=pymysql
 

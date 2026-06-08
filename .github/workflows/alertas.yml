@@ -19,13 +19,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_TYPE: ${{ secrets.DB_TYPE }}
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
+      DB_TYPE: ${{ secrets.DB_TYPE || 'mariadb' }}
+      DB_SERVER: ${{ secrets.DB_SERVER || 'mexreplica.epresis.com' }}
+      DB_NAME: ${{ secrets.DB_NAME || 'mex_lv' }}
+      DB_USER: ${{ secrets.DB_USER || 'readonly_mex' }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_DRIVER: ${{ secrets.DB_DRIVER }}
+      DB_PORT: ${{ secrets.DB_PORT || '3345' }}
+      DB_DRIVER: ${{ secrets.DB_DRIVER || 'pymysql' }}
       SMTP_SERVER: ${{ secrets.SMTP_SERVER || secrets.SMTP_HOST }}
       SMTP_PORT: ${{ secrets.SMTP_PORT }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -34,15 +34,15 @@ jobs:
       EMAIL_DRY_RUN: ${{ github.event.inputs.email_dry_run || secrets.EMAIL_DRY_RUN || 'false' }}
       EMAIL_PREVIEW_DIR: data/email_previews
       MAIL_FROM: ${{ secrets.MAIL_FROM || secrets.SMTP_USER }}
-      MAIL_TO: ${{ secrets.MAIL_TO || secrets.REPORT_EMAILS }}
-      ALERT_DAYS_THRESHOLD: ${{ secrets.ALERT_DAYS_THRESHOLD }}
-      ALERT_AMOUNT_THRESHOLD: ${{ secrets.ALERT_AMOUNT_THRESHOLD }}
-      ENABLED_RULES: ${{ secrets.ENABLED_RULES }}
-      GUIDE_DUE_DATE_COLUMN: ${{ secrets.GUIDE_DUE_DATE_COLUMN }}
-      GUIDE_LOOKAHEAD_DAYS: ${{ secrets.GUIDE_LOOKAHEAD_DAYS }}
-      GUIDE_MAX_ROWS: ${{ secrets.GUIDE_MAX_ROWS }}
-      GUIDE_ONLY_ACTIVE: ${{ secrets.GUIDE_ONLY_ACTIVE }}
-      GUIDE_ONLY_UNFINISHED: ${{ secrets.GUIDE_ONLY_UNFINISHED }}
+      MAIL_TO: ${{ secrets.MAIL_TO || secrets.REPORT_EMAILS || 'gpereyra@mailexpress.com.ar,airisarri@mailexpress.com.ar,mzera@mailexpress.com.ar' }}
+      ALERT_DAYS_THRESHOLD: ${{ secrets.ALERT_DAYS_THRESHOLD || '7' }}
+      ALERT_AMOUNT_THRESHOLD: ${{ secrets.ALERT_AMOUNT_THRESHOLD || '100000' }}
+      ENABLED_RULES: ${{ secrets.ENABLED_RULES || 'guide_due_date' }}
+      GUIDE_DUE_DATE_COLUMN: ${{ secrets.GUIDE_DUE_DATE_COLUMN || 'fecha_vencimiento' }}
+      GUIDE_LOOKAHEAD_DAYS: ${{ secrets.GUIDE_LOOKAHEAD_DAYS || '7' }}
+      GUIDE_MAX_ROWS: ${{ secrets.GUIDE_MAX_ROWS || '1000' }}
+      GUIDE_ONLY_ACTIVE: ${{ secrets.GUIDE_ONLY_ACTIVE || 'true' }}
+      GUIDE_ONLY_UNFINISHED: ${{ secrets.GUIDE_ONLY_UNFINISHED || 'true' }}
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}
       SUCURSAL_GROUPS_JSON: ${{ secrets.SUCURSAL_GROUPS_JSON }}
       ENVIRONMENT: github_actions
