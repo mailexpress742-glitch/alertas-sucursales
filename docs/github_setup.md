@@ -126,3 +126,19 @@ email_dry_run=false
 ## 5. Red y acceso a la base
 
 Si GitHub Actions no puede conectarse a `mexreplica.epresis.com:3345`, usar un self-hosted runner dentro de la red con acceso a la base, o ejecutar el proceso en un servidor/cloud con conectividad permitida.
+
+Los runners hospedados de GitHub pueden no tener permiso de red para entrar a la base. En ese caso el error esperado es similar a:
+
+```text
+Can't connect to MySQL server on 'mexreplica.epresis.com' (timed out)
+```
+
+Para que la primera prueba no quede bloqueada por conectividad, el workflow hace esto:
+
+- Si `email_dry_run=true` y la base no responde, genera un preview de muestra y sube el artifact `email-previews`.
+- Si `email_dry_run=false`, el workflow falla. Eso es correcto, porque no se puede enviar una alerta real sin consultar la base.
+
+Para produccion hay dos caminos:
+
+- Instalar un self-hosted runner en una maquina/servidor que tenga acceso a `mexreplica.epresis.com:3345`.
+- Pedir a infraestructura que permita el acceso desde GitHub Actions a la base o publicar un endpoint intermedio seguro.

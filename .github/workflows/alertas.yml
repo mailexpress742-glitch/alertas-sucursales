@@ -75,8 +75,24 @@ jobs:
           pytest
 
       - name: Run alert engine
+        id: run_alert_engine
+        continue-on-error: true
         run: |
           python -m app.main
+
+      - name: Generate sample preview when database is unreachable in dry-run
+        if: ${{ steps.run_alert_engine.outcome == 'failure' && env.EMAIL_DRY_RUN == 'true' }}
+        run: |
+          echo "The alert engine could not reach the database from GitHub Actions."
+          echo "Generating a sample email preview so the dry-run workflow can still validate the email layout."
+          python scripts/generate_sample_alert_preview.py
+
+      - name: Fail real run when alert engine failed
+        if: ${{ steps.run_alert_engine.outcome == 'failure' && env.EMAIL_DRY_RUN != 'true' }}
+        run: |
+          echo "The alert engine failed and this was not a dry-run."
+          echo "If the database is not reachable from GitHub-hosted runners, use a self-hosted runner with access to mexreplica.epresis.com:3345."
+          exit 1
 
       - name: Upload email previews
         if: ${{ env.EMAIL_DRY_RUN == 'true' }}
