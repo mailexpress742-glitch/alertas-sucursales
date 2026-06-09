@@ -119,7 +119,7 @@ Si aparecen alertas, descargar el artifact:
 email-previews
 ```
 
-Para recibir un correo de prueba con datos de muestra mientras la base sigue sin responder, ejecutar manualmente con:
+Para recibir un correo de prueba con datos de muestra durante un `dry-run`, ejecutar manualmente con:
 
 ```text
 email_dry_run=true
@@ -127,7 +127,7 @@ allow_sample_preview_on_db_failure=true
 send_sample_email_on_db_failure=true
 ```
 
-Ese modo envia un mail de muestra por SMTP, pero no consulta datos reales.
+Ese modo envia un mail de muestra por SMTP. Si la base responde, tambien sube los previews reales como artifact; el mail de muestra sirve para validar el formato visual sin enviar alertas reales.
 
 Cuando el preview este validado y el SMTP este configurado, ejecutar manualmente con:
 
@@ -147,8 +147,9 @@ Can't connect to MySQL server on 'mexreplica.epresis.com' (timed out)
 
 Para que la primera prueba no quede bloqueada por conectividad, el workflow hace esto:
 
-- Si `email_dry_run=true` y `allow_sample_preview_on_db_failure=true`, el workflow genera un preview de muestra cuando la base no responde y sube el artifact `email-previews`. Esto sirve para validar formato visual.
-- Si ademas `send_sample_email_on_db_failure=true`, envia ese preview de muestra por SMTP.
+- Si `email_dry_run=true`, el motor genera previews y no envia alertas reales.
+- Si ademas `send_sample_email_on_db_failure=true`, envia un correo de muestra por SMTP para validar el formato visual.
+- Si `email_dry_run=true` y `allow_sample_preview_on_db_failure=true`, el workflow tambien genera un preview de muestra cuando la base no responde y sube el artifact `email-previews`.
 - Si `email_dry_run=true` y `allow_sample_preview_on_db_failure=false`, el workflow falla cuando la base no responde. Esto sirve para validar conectividad real.
 - Si `email_dry_run=false`, el workflow siempre falla cuando no puede consultar la base. Eso es correcto, porque no se puede enviar una alerta real sin datos.
 

@@ -20,7 +20,7 @@ on:
           - "true"
           - "false"
       send_sample_email_on_db_failure:
-        description: "Enviar por mail el preview de muestra si la base no responde"
+        description: "Enviar por mail un preview de muestra en dry-run"
         required: true
         default: "true"
         type: choice
@@ -137,6 +137,14 @@ jobs:
         continue-on-error: true
         run: |
           python -m app.main
+
+      - name: Send sample preview email when requested in dry-run
+        if: ${{ steps.run_alert_engine.outcome == 'success' && env.EMAIL_DRY_RUN == 'true' && env.SEND_SAMPLE_EMAIL_ON_DB_FAILURE == 'true' }}
+        run: |
+          echo "The alert engine finished in dry-run mode."
+          echo "Sending a sample preview email because it was requested for this manual run."
+          $env:SAMPLE_PREVIEW_EMAIL_DRY_RUN = "false"
+          python scripts/generate_sample_alert_preview.py
 
       - name: Generate sample preview when database is unreachable in dry-run
         if: ${{ steps.run_alert_engine.outcome == 'failure' && env.EMAIL_DRY_RUN == 'true' && env.ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE == 'true' }}
