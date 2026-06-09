@@ -135,8 +135,9 @@ Can't connect to MySQL server on 'mexreplica.epresis.com' (timed out)
 
 Para que la primera prueba no quede bloqueada por conectividad, el workflow hace esto:
 
-- Si `email_dry_run=true` y la base no responde, genera un preview de muestra y sube el artifact `email-previews`.
-- Si `email_dry_run=false`, el workflow falla. Eso es correcto, porque no se puede enviar una alerta real sin consultar la base.
+- Si `email_dry_run=true`, el workflow igual falla cuando la base no responde. Eso confirma si la alerta real puede consultar datos.
+- Si solo se quiere validar el formato visual del correo sin base, crear el secret `ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE=true`; en ese modo genera un preview de muestra y sube el artifact `email-previews`.
+- Si `email_dry_run=false`, el workflow siempre falla cuando no puede consultar la base. Eso es correcto, porque no se puede enviar una alerta real sin datos.
 
 Para produccion hay dos caminos:
 
