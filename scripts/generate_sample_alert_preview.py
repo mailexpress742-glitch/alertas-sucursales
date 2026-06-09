@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import replace
 from pathlib import Path
 import sys
@@ -13,8 +14,18 @@ from app.email_service.email_sender import EmailSender
 from app.rules.guide_due_date_rule import GuideDueDateSemaphoreRule
 
 
+def _bool_from_env(value: str | None, default: bool = False) -> bool:
+    if value is None or value == "":
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
 def main() -> None:
-    settings = replace(Settings.from_env(), email_dry_run=True)
+    email_dry_run = _bool_from_env(
+        os.environ.get("SAMPLE_PREVIEW_EMAIL_DRY_RUN"),
+        True,
+    )
+    settings = replace(Settings.from_env(), email_dry_run=email_dry_run)
     preview_dir = settings.email_preview_dir
     before = set(preview_dir.glob("*")) if preview_dir.exists() else set()
 
@@ -57,6 +68,8 @@ def main() -> None:
     created = sorted(after - before)
 
     print(f"Alertas de muestra generadas: {len(alerts)}")
+    if not settings.email_dry_run:
+        print("Correo de muestra enviado por SMTP.")
     if created:
         print("Archivos generados:")
         for path in created:

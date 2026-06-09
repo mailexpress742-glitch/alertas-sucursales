@@ -19,6 +19,14 @@ on:
         options:
           - "true"
           - "false"
+      send_sample_email_on_db_failure:
+        description: "Enviar por mail el preview de muestra si la base no responde"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
   schedule:
     - cron: "15 11 * * 1-5"
 
@@ -58,6 +66,7 @@ jobs:
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}
       SUCURSAL_GROUPS_JSON: ${{ secrets.SUCURSAL_GROUPS_JSON }}
       ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE: ${{ github.event.inputs.allow_sample_preview_on_db_failure || secrets.ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE || 'false' }}
+      SEND_SAMPLE_EMAIL_ON_DB_FAILURE: ${{ github.event.inputs.send_sample_email_on_db_failure || 'false' }}
       RUNNER_LOCAL_ENV_FILE: 'C:\Users\SIST03\Documents\Alertas Inteligentes - Sucursales\.env'
       ENVIRONMENT: github_actions
       PYTHONPATH: ${{ github.workspace }}
@@ -134,6 +143,12 @@ jobs:
         run: |
           echo "The alert engine could not reach the database from GitHub Actions."
           echo "Generating a sample email preview so the dry-run workflow can still validate the email layout."
+          if ($env:SEND_SAMPLE_EMAIL_ON_DB_FAILURE -eq "true") {
+            echo "Sample preview email sending is enabled for this manual run."
+            $env:SAMPLE_PREVIEW_EMAIL_DRY_RUN = "false"
+          } else {
+            $env:SAMPLE_PREVIEW_EMAIL_DRY_RUN = "true"
+          }
           python scripts/generate_sample_alert_preview.py
 
       - name: Fail run when alert engine failed
