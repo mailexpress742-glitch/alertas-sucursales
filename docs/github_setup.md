@@ -110,7 +110,7 @@ Elegir:
 ```text
 email_dry_run=true
 allow_sample_preview_on_db_failure=true
-send_sample_email_on_db_failure=false
+send_sample_email_on_db_failure=true
 ```
 
 Si aparecen alertas, descargar el artifact:

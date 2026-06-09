@@ -22,11 +22,11 @@ on:
       send_sample_email_on_db_failure:
         description: "Enviar por mail el preview de muestra si la base no responde"
         required: true
-        default: "false"
+        default: "true"
         type: choice
         options:
-          - "false"
           - "true"
+          - "false"
   schedule:
     - cron: "15 11 * * 1-5"
 
