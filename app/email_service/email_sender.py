@@ -87,19 +87,28 @@ class EmailSender:
     ) -> EmailMessage:
         generated_at = local_now(self.settings.app_timezone)
         mail_title = branch_title or self._resolve_mail_title(alerts)
+        is_consolidated_guide = self._is_consolidated_guide_email(alerts)
+        alert_count = 1 if is_consolidated_guide else len(alerts)
+        detail_count = len(alerts)
         template = self.template_env.get_template("alert_email.html")
         html_body = template.render(
             mail_title=mail_title,
             alerts=alerts,
             sections=self._build_sections(alerts),
             summary=summary,
-            total_alerts=len(alerts),
+            total_alerts=alert_count,
+            total_details=detail_count,
+            is_consolidated_guide=is_consolidated_guide,
             generated_at=generated_at,
         )
 
+        headline = f"{mail_title}: {alert_count}"
+        if is_consolidated_guide:
+            headline = f"{mail_title}: {alert_count} alerta consolidada, {detail_count} detalles"
+
         plain_body = "\n".join(
             [
-                f"{mail_title}: {len(alerts)}",
+                headline,
                 f"Fecha de ejecucion: {generated_at:%Y-%m-%d %H:%M:%S %Z}",
                 "",
                 *[
@@ -112,7 +121,7 @@ class EmailSender:
         )
 
         message = EmailMessage()
-        message["Subject"] = f"{mail_title} - Alertas ({len(alerts)})"
+        message["Subject"] = f"{mail_title} - Alertas ({alert_count})"
         message["From"] = self.settings.mail_from
         message["To"] = ", ".join(recipients)
         message.set_content(plain_body)
@@ -145,6 +154,13 @@ class EmailSender:
         if len(titles) > 1:
             return "Alertas por sucursal"
         return "Alertas inteligentes detectadas"
+
+    @staticmethod
+    def _is_consolidated_guide_email(alerts: list[Alert]) -> bool:
+        return bool(alerts) and all(
+            alert.alert_type == "GUIDE_DUE_DATE" and alert.metadata.get("semaphore")
+            for alert in alerts
+        )
 
     def _write_preview(
         self,
@@ -181,19 +197,19 @@ class EmailSender:
         section_definitions = [
             {
                 "key": "critical",
-                "title": "CRITICO (Urgente)",
+                "title": "CRITICO (Hoy o vencidas)",
                 "color": "#b42318",
                 "action": "Gestion inmediata y rendicion prioritaria.",
             },
             {
                 "key": "warning",
-                "title": "ADVERTENCIA (Corto plazo)",
+                "title": "PROXIMAS 48 HORAS",
                 "color": "#b54708",
                 "action": "Seguimiento preventivo para asegurar el cumplimiento.",
             },
             {
                 "key": "upcoming",
-                "title": "PROXIMOS (Planificacion)",
+                "title": "PROXIMA SEMANA",
                 "color": "#027a48",
                 "action": "Visibilidad para la organizacion operativa semanal.",
             },

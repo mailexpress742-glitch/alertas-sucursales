@@ -15,9 +15,13 @@
         <div style="background:#eef6ff;border:1px solid #b6d4fe;border-radius:6px;padding:16px;margin-bottom:20px;">
           <strong>Resumen ejecutivo</strong>
           <p style="margin:8px 0 0;">
-            Se detectaron {{ total_alerts }} alerta(s) nueva(s) que requieren revision.
+            {% if is_consolidated_guide %}
+              Se detecto {{ total_alerts }} alerta consolidada con {{ total_details }} detalle(s) que requieren revision.
+            {% else %}
+              Se detectaron {{ total_alerts }} alerta(s) nueva(s) que requieren revision.
+            {% endif %}
             {% if summary.get("duplicates_skipped") %}
-              Se omitieron {{ summary.get("duplicates_skipped") }} alerta(s) ya enviadas previamente.
+              Se omitieron {{ summary.get("duplicates_skipped") }} {% if is_consolidated_guide %}detalle(s){% else %}alerta(s){% endif %} ya enviados previamente.
             {% endif %}
           </p>
         </div>
@@ -25,27 +29,43 @@
         {% for section in sections %}
         <div style="margin-top:20px;">
           <h2 style="margin:0 0 6px;font-size:18px;color:{{ section.color }};">
-            {{ section.title }} - {{ section.alerts|length }} alerta(s)
+            {{ section.title }} - {{ section.alerts|length }} {% if is_consolidated_guide %}detalle(s){% else %}alerta(s){% endif %}
           </h2>
           <p style="margin:0 0 10px;color:#52606d;">{{ section.action }}</p>
           <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px;">
             <thead>
               <tr style="background:{{ section.color }};color:#ffffff;">
+                {% if is_consolidated_guide %}
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:14%;">Guia</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:14%;">Remito</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:32%;">Cliente</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:16%;">Pactada</th>
+                <th style="padding:10px;text-align:left;">Estado</th>
+                {% else %}
                 <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:13%;">Sucursal</th>
                 <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:17%;">Guia/retiro</th>
                 <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:12%;">Fecha pactada</th>
                 <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:7%;">Dias</th>
                 <th style="padding:10px;text-align:left;">Detalle</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
               {% for alert in section.alerts %}
               <tr style="border-bottom:1px solid #d9e2ec;">
+                {% if is_consolidated_guide %}
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.record_reference }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.metadata.get("remito") or alert.metadata.get("nro_remito") or alert.metadata.get("numero_remito") or alert.metadata.get("tracking") or "-" }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.metadata.get("cliente") or alert.metadata.get("cliente_nombre") or alert.metadata.get("nombre_cliente") or alert.metadata.get("remitente") or alert.metadata.get("destinatario") or "-" }}</td>
+                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;white-space:nowrap;">{{ alert.metadata.get("fecha_pactada_date") or alert.metadata.get("fecha_pactada") or "-" }}</td>
+                <td style="padding:10px;vertical-align:top;">{{ alert.metadata.get("estado") or alert.metadata.get("estado_descripcion") or alert.metadata.get("estado_nombre") or alert.metadata.get("status") or alert.metadata.get("estado_id") or "-" }}</td>
+                {% else %}
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.source }}</td>
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.record_reference }}</td>
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;white-space:nowrap;">{{ alert.metadata.get("fecha_pactada_date") or alert.metadata.get("fecha_pactada") or "-" }}</td>
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;text-align:center;">{{ alert.metadata.get("days_until_due", "-") }}</td>
                 <td style="padding:10px;vertical-align:top;">{{ alert.description }}</td>
+                {% endif %}
               </tr>
               {% endfor %}
             </tbody>

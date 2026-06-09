@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from email import message_from_string
 from pathlib import Path
 
 from app.alerts.alert_model import Alert
@@ -145,6 +146,85 @@ def test_email_sender_dry_run_generates_preview(tmp_path: Path) -> None:
     assert email_sent is False
     assert list(tmp_path.glob("*.html"))
     assert list(tmp_path.glob("*.eml"))
+
+
+def test_email_sender_consolidates_guide_details_in_one_branch_email(tmp_path: Path) -> None:
+    settings = Settings(
+        email_dry_run=True,
+        email_preview_dir=tmp_path,
+        mail_from="alertas@example.com",
+        mail_to=("fallback@example.com",),
+    )
+    sender = EmailSender(settings)
+    alerts = [
+        Alert(
+            alert_id="a1",
+            alert_type="GUIDE_DUE_DATE",
+            severity="critical",
+            title="A1",
+            description="A1",
+            source="MEXSR",
+            record_reference="G-1",
+            recipients=("s1@example.com",),
+            metadata={
+                "branch_title": "Sucursal San Rafael",
+                "semaphore": "critical",
+                "remito": "R-1",
+                "cliente": "Cliente 1",
+                "fecha_pactada_date": "2026-06-09",
+                "estado": "DESPACHADO A SUCURSAL",
+            },
+        ),
+        Alert(
+            alert_id="a2",
+            alert_type="GUIDE_DUE_DATE",
+            severity="warning",
+            title="A2",
+            description="A2",
+            source="MEXSR",
+            record_reference="G-2",
+            recipients=("s1@example.com",),
+            metadata={
+                "branch_title": "Sucursal San Rafael",
+                "semaphore": "warning",
+                "remito": "R-2",
+                "cliente": "Cliente 2",
+                "fecha_pactada_date": "2026-06-10",
+                "estado": "RC-EN RUTA PARA SU ENTREGA",
+            },
+        ),
+        Alert(
+            alert_id="a3",
+            alert_type="GUIDE_DUE_DATE",
+            severity="info",
+            title="A3",
+            description="A3",
+            source="MEXSR",
+            record_reference="G-3",
+            recipients=("s1@example.com",),
+            metadata={
+                "branch_title": "Sucursal San Rafael",
+                "semaphore": "upcoming",
+                "remito": "R-3",
+                "cliente": "Cliente 3",
+                "fecha_pactada_date": "2026-06-13",
+                "estado": "DESP-Despachado",
+            },
+        ),
+    ]
+
+    sender.send_alerts(alerts)
+
+    eml = message_from_string(next(tmp_path.glob("*.eml")).read_text(encoding="utf-8"))
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+
+    assert eml["Subject"] == "Sucursal San Rafael - Alertas (1)"
+    assert "Se detecto 1 alerta consolidada con 3 detalle(s)" in html
+    assert "CRITICO (Hoy o vencidas) - 1 detalle(s)" in html
+    assert "PROXIMAS 48 HORAS - 1 detalle(s)" in html
+    assert "PROXIMA SEMANA - 1 detalle(s)" in html
+    assert all(label in html for label in ("Guia", "Remito", "Cliente", "Pactada", "Estado"))
+    assert all(value in html for value in ("G-1", "G-2", "G-3", "R-1", "R-2", "R-3"))
 
 
 def test_branch_name_resolver_uses_group_mapping(tmp_path: Path) -> None:

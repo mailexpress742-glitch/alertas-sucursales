@@ -33,14 +33,29 @@ def main() -> None:
 
     today = local_now(settings.app_timezone).date()
     branch_samples = [
-        {"label": "SR", "sucursal_id": 44, "codigo_sucursal": "MEXSR"},
-        {"label": "CBA", "sucursal_id": 42, "codigo_sucursal": "MEXRIOIV"},
-        {"label": "GA", "sucursal_id": 128, "codigo_sucursal": "MEXGALVEAR"},
+        {
+            "label": "SR",
+            "sucursal_id": 44,
+            "codigo_sucursal": "MEXSR",
+            "cliente": "MAILEXPRESS SAN RAFAEL",
+        },
+        {
+            "label": "CBA",
+            "sucursal_id": 42,
+            "codigo_sucursal": "MEXRIOIV",
+            "cliente": "MAILEXPRESS RIO IV",
+        },
+        {
+            "label": "GA",
+            "sucursal_id": 128,
+            "codigo_sucursal": "MEXGALVEAR",
+            "cliente": "MAILEXPRESS GENERAL ALVEAR",
+        },
     ]
     status_samples = [
-        {"label": "CRITICA", "days_until_due": 0},
-        {"label": "ADVERTENCIA", "days_until_due": 2},
-        {"label": "PROXIMA", "days_until_due": 5},
+        {"label": "CRITICA", "days_until_due": 0, "estado": "DESPACHADO A SUCURSAL"},
+        {"label": "ADVERTENCIA", "days_until_due": 2, "estado": "RC-EN RUTA PARA SU ENTREGA"},
+        {"label": "PROXIMA", "days_until_due": 5, "estado": "DESP-Despachado"},
     ]
 
     rows = []
@@ -52,8 +67,11 @@ def main() -> None:
                     "record_reference": f"GUIA-{branch['label']}-{status['label']}-001",
                     "sucursal_id": branch["sucursal_id"],
                     "codigo_sucursal": branch["codigo_sucursal"],
+                    "remito": f"RM-{branch['label']}-{days_until_due}",
+                    "cliente": branch["cliente"],
                     "fecha_pactada_date": (today + timedelta(days=days_until_due)).isoformat(),
                     "days_until_due": days_until_due,
+                    "estado": status["estado"],
                 }
             )
 
