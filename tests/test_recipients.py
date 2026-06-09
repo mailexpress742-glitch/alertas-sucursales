@@ -269,6 +269,41 @@ def test_email_sender_limits_guide_details_to_thirty_per_section(tmp_path: Path)
     assert "R-031" not in html
 
 
+def test_email_sender_does_not_show_tracking_as_remito(tmp_path: Path) -> None:
+    settings = Settings(
+        email_dry_run=True,
+        email_preview_dir=tmp_path,
+        mail_from="alertas@example.com",
+        mail_to=("fallback@example.com",),
+    )
+    sender = EmailSender(settings)
+    alert = Alert(
+        alert_id="a1",
+        alert_type="GUIDE_DUE_DATE",
+        severity="critical",
+        title="A1",
+        description="A1",
+        source="MEXSR",
+        record_reference="103842782",
+        recipients=("s1@example.com",),
+        metadata={
+            "branch_title": "Sucursal San Rafael",
+            "semaphore": "critical",
+            "tracking": "NO-USAR-COMO-REMITO",
+            "cliente": "Cliente 1",
+            "fecha_pactada_date": "2026-06-09",
+            "estado": "DESPACHADO A SUCURSAL",
+        },
+    )
+
+    sender.send_alerts([alert])
+
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+
+    assert "103842782" in html
+    assert "NO-USAR-COMO-REMITO" not in html
+
+
 def test_branch_name_resolver_uses_group_mapping(tmp_path: Path) -> None:
     mapping_file = tmp_path / "groups.json"
     mapping_file.write_text('{"MEXSR": "Sucursal San Rafael", "42": "Sucursal Cba"}', encoding="utf-8")
