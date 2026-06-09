@@ -109,6 +109,7 @@ Elegir:
 
 ```text
 email_dry_run=true
+allow_sample_preview_on_db_failure=true
 ```
 
 Si aparecen alertas, descargar el artifact:
@@ -135,8 +136,8 @@ Can't connect to MySQL server on 'mexreplica.epresis.com' (timed out)
 
 Para que la primera prueba no quede bloqueada por conectividad, el workflow hace esto:
 
-- Si `email_dry_run=true`, el workflow igual falla cuando la base no responde. Eso confirma si la alerta real puede consultar datos.
-- Si solo se quiere validar el formato visual del correo sin base, crear el secret `ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE=true`; en ese modo genera un preview de muestra y sube el artifact `email-previews`.
+- Si `email_dry_run=true` y `allow_sample_preview_on_db_failure=true`, el workflow genera un preview de muestra cuando la base no responde y sube el artifact `email-previews`. Esto sirve para validar formato visual.
+- Si `email_dry_run=true` y `allow_sample_preview_on_db_failure=false`, el workflow falla cuando la base no responde. Esto sirve para validar conectividad real.
 - Si `email_dry_run=false`, el workflow siempre falla cuando no puede consultar la base. Eso es correcto, porque no se puede enviar una alerta real sin datos.
 
 Para produccion hay dos caminos:

@@ -11,6 +11,14 @@ on:
         options:
           - "true"
           - "false"
+      allow_sample_preview_on_db_failure:
+        description: "En dry-run, generar preview de muestra si la base no responde"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
   schedule:
     - cron: "15 11 * * 1-5"
 
@@ -49,7 +57,7 @@ jobs:
       GUIDE_ONLY_UNFINISHED: ${{ secrets.GUIDE_ONLY_UNFINISHED || 'true' }}
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}
       SUCURSAL_GROUPS_JSON: ${{ secrets.SUCURSAL_GROUPS_JSON }}
-      ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE: ${{ secrets.ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE || 'false' }}
+      ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE: ${{ github.event.inputs.allow_sample_preview_on_db_failure || secrets.ALLOW_SAMPLE_PREVIEW_ON_DB_FAILURE || 'false' }}
       RUNNER_LOCAL_ENV_FILE: 'C:\Users\SIST03\Documents\Alertas Inteligentes - Sucursales\.env'
       ENVIRONMENT: github_actions
       PYTHONPATH: ${{ github.workspace }}
