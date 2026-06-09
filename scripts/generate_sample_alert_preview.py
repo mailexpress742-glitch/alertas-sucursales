@@ -53,27 +53,45 @@ def main() -> None:
         },
     ]
     status_samples = [
-        {"label": "CRITICA", "days_until_due": 0, "estado": "DESPACHADO A SUCURSAL"},
-        {"label": "ADVERTENCIA", "days_until_due": 2, "estado": "RC-EN RUTA PARA SU ENTREGA"},
-        {"label": "PROXIMA", "days_until_due": 5, "estado": "DESP-Despachado"},
+        {
+            "label": "CRITICA",
+            "days_until_due": 0,
+            "estado": "DESPACHADO A SUCURSAL",
+            "count": 35,
+        },
+        {
+            "label": "ADVERTENCIA",
+            "days_until_due": 2,
+            "estado": "RC-EN RUTA PARA SU ENTREGA",
+            "count": 33,
+        },
+        {
+            "label": "PROXIMA",
+            "days_until_due": 5,
+            "estado": "DESP-Despachado",
+            "count": 31,
+        },
     ]
 
     rows = []
     for branch in branch_samples:
         for status in status_samples:
             days_until_due = status["days_until_due"]
-            rows.append(
-                {
-                    "record_reference": f"GUIA-{branch['label']}-{status['label']}-001",
-                    "sucursal_id": branch["sucursal_id"],
-                    "codigo_sucursal": branch["codigo_sucursal"],
-                    "remito": f"RM-{branch['label']}-{days_until_due}",
-                    "cliente": branch["cliente"],
-                    "fecha_pactada_date": (today + timedelta(days=days_until_due)).isoformat(),
-                    "days_until_due": days_until_due,
-                    "estado": status["estado"],
-                }
-            )
+            for index in range(1, status["count"] + 1):
+                rows.append(
+                    {
+                        "record_reference": (
+                            f"GUIA-{branch['label']}-{status['label']}-{index:03d}"
+                        ),
+                        "sucursal_id": branch["sucursal_id"],
+                        "codigo_sucursal": branch["codigo_sucursal"],
+                        "remito": f"RM-{branch['label']}-{days_until_due}-{index:03d}",
+                        "cliente": branch["cliente"],
+                        "fecha_pactada_date": (today + timedelta(days=days_until_due)).isoformat(),
+                        "days_until_due": days_until_due,
+                        "estado": status["estado"],
+                    }
+                )
 
     alerts = GuideDueDateSemaphoreRule(settings).evaluate(rows)
     EmailSender(settings).send_alerts(

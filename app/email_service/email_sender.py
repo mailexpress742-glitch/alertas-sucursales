@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class EmailSender:
+    SECTION_DISPLAY_LIMIT = 30
+
     def __init__(self, settings: Settings, template_dir: Path | None = None):
         self.settings = settings
         self.template_dir = template_dir or Path(__file__).resolve().parent / "templates"
@@ -224,10 +226,20 @@ class EmailSender:
                 if alert.metadata.get("semaphore") == definition["key"]
             ]
             if grouped:
-                sections.append({**definition, "alerts": grouped})
+                display_alerts = grouped[: EmailSender.SECTION_DISPLAY_LIMIT]
+                sections.append(
+                    {
+                        **definition,
+                        "alerts": grouped,
+                        "display_alerts": display_alerts,
+                        "shown_count": len(display_alerts),
+                        "total_count": len(grouped),
+                    }
+                )
                 remaining = [alert for alert in remaining if alert not in grouped]
 
         if remaining:
+            display_alerts = remaining[: EmailSender.SECTION_DISPLAY_LIMIT]
             sections.append(
                 {
                     "key": "other",
@@ -235,6 +247,9 @@ class EmailSender:
                     "color": "#344054",
                     "action": "Revision operativa.",
                     "alerts": remaining,
+                    "display_alerts": display_alerts,
+                    "shown_count": len(display_alerts),
+                    "total_count": len(remaining),
                 }
             )
 

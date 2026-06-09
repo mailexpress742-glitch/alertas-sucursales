@@ -220,11 +220,53 @@ def test_email_sender_consolidates_guide_details_in_one_branch_email(tmp_path: P
 
     assert eml["Subject"] == "Sucursal San Rafael - Alertas (1)"
     assert "Se detecto 1 alerta consolidada con 3 detalle(s)" in html
-    assert "CRITICO (Hoy o vencidas) - 1 detalle(s)" in html
-    assert "PROXIMAS 48 HORAS - 1 detalle(s)" in html
-    assert "PROXIMA SEMANA - 1 detalle(s)" in html
+    assert "CRITICO (Hoy o vencidas) - Mostrando 1 de 1 registros" in html
+    assert "PROXIMAS 48 HORAS - Mostrando 1 de 1 registros" in html
+    assert "PROXIMA SEMANA - Mostrando 1 de 1 registros" in html
     assert all(label in html for label in ("Guia", "Remito", "Cliente", "Pactada", "Estado"))
     assert all(value in html for value in ("G-1", "G-2", "G-3", "R-1", "R-2", "R-3"))
+
+
+def test_email_sender_limits_guide_details_to_thirty_per_section(tmp_path: Path) -> None:
+    settings = Settings(
+        email_dry_run=True,
+        email_preview_dir=tmp_path,
+        mail_from="alertas@example.com",
+        mail_to=("fallback@example.com",),
+    )
+    sender = EmailSender(settings)
+    alerts = [
+        Alert(
+            alert_id=f"a{index}",
+            alert_type="GUIDE_DUE_DATE",
+            severity="critical",
+            title=f"A{index}",
+            description=f"A{index}",
+            source="MEXSR",
+            record_reference=f"G-{index:03d}",
+            recipients=("s1@example.com",),
+            metadata={
+                "branch_title": "Sucursal San Rafael",
+                "semaphore": "critical",
+                "remito": f"R-{index:03d}",
+                "cliente": "Cliente 1",
+                "fecha_pactada_date": "2026-06-09",
+                "estado": "DESPACHADO A SUCURSAL",
+            },
+        )
+        for index in range(1, 36)
+    ]
+
+    sender.send_alerts(alerts)
+
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+
+    assert "Se detecto 1 alerta consolidada con 35 detalle(s)" in html
+    assert "CRITICO (Hoy o vencidas) - Mostrando 30 de 35 registros" in html
+    assert "G-030" in html
+    assert "G-031" not in html
+    assert "R-030" in html
+    assert "R-031" not in html
 
 
 def test_branch_name_resolver_uses_group_mapping(tmp_path: Path) -> None:
