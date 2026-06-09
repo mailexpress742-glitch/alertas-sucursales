@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import replace
+from datetime import timedelta
 from pathlib import Path
 import sys
 
@@ -12,6 +13,7 @@ sys.path.insert(0, str(ROOT_DIR))
 from app.config import Settings
 from app.email_service.email_sender import EmailSender
 from app.rules.guide_due_date_rule import GuideDueDateSemaphoreRule
+from app.utils.date_utils import local_now
 
 
 def _bool_from_env(value: str | None, default: bool = False) -> bool:
@@ -29,29 +31,31 @@ def main() -> None:
     preview_dir = settings.email_preview_dir
     before = set(preview_dir.glob("*")) if preview_dir.exists() else set()
 
-    rows = [
-        {
-            "record_reference": "GUIA-CRITICA-001",
-            "sucursal_id": 44,
-            "codigo_sucursal": "MEXSR",
-            "fecha_pactada_date": "2026-06-08",
-            "days_until_due": 0,
-        },
-        {
-            "record_reference": "GUIA-ADVERTENCIA-001",
-            "sucursal_id": 42,
-            "codigo_sucursal": "MEXRIOIV",
-            "fecha_pactada_date": "2026-06-10",
-            "days_until_due": 2,
-        },
-        {
-            "record_reference": "GUIA-PROXIMA-001",
-            "sucursal_id": 128,
-            "codigo_sucursal": "MEXGALVEAR",
-            "fecha_pactada_date": "2026-06-13",
-            "days_until_due": 5,
-        },
+    today = local_now(settings.app_timezone).date()
+    branch_samples = [
+        {"label": "SR", "sucursal_id": 44, "codigo_sucursal": "MEXSR"},
+        {"label": "CBA", "sucursal_id": 42, "codigo_sucursal": "MEXRIOIV"},
+        {"label": "GA", "sucursal_id": 128, "codigo_sucursal": "MEXGALVEAR"},
     ]
+    status_samples = [
+        {"label": "CRITICA", "days_until_due": 0},
+        {"label": "ADVERTENCIA", "days_until_due": 2},
+        {"label": "PROXIMA", "days_until_due": 5},
+    ]
+
+    rows = []
+    for branch in branch_samples:
+        for status in status_samples:
+            days_until_due = status["days_until_due"]
+            rows.append(
+                {
+                    "record_reference": f"GUIA-{branch['label']}-{status['label']}-001",
+                    "sucursal_id": branch["sucursal_id"],
+                    "codigo_sucursal": branch["codigo_sucursal"],
+                    "fecha_pactada_date": (today + timedelta(days=days_until_due)).isoformat(),
+                    "days_until_due": days_until_due,
+                }
+            )
 
     alerts = GuideDueDateSemaphoreRule(settings).evaluate(rows)
     EmailSender(settings).send_alerts(
