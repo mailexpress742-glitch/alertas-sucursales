@@ -114,7 +114,7 @@ Variables principales:
 - `ENABLED_RULES`: por defecto `guide_due_date`.
 - `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fecha_vencimiento`.
 - `GUIDE_LOOKAHEAD_DAYS`: dias futuros para incluir en el semaforo. Por defecto `7`.
-- `GUIDE_MAX_ROWS`: maximo de guias a traer por ejecucion. Por defecto `1000`.
+- `GUIDE_MAX_ROWS`: maximo de guias a traer por ejecucion para calcular los totales por categoria. Por defecto `50000`; el cuerpo del mail muestra hasta 30 por categoria.
 - `GUIDE_ONLY_ACTIVE`: si es `true`, excluye guias inactivas.
 - `GUIDE_ONLY_UNFINISHED`: si es `true`, excluye guias finalizadas.
 - `SUCURSAL_RECIPIENTS_FILE`: archivo local JSON para mapear sucursales a mails.

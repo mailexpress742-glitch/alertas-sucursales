@@ -60,7 +60,7 @@ jobs:
       ENABLED_RULES: ${{ secrets.ENABLED_RULES || 'guide_due_date' }}
       GUIDE_DUE_DATE_COLUMN: ${{ secrets.GUIDE_DUE_DATE_COLUMN || 'fecha_vencimiento' }}
       GUIDE_LOOKAHEAD_DAYS: ${{ secrets.GUIDE_LOOKAHEAD_DAYS || '7' }}
-      GUIDE_MAX_ROWS: ${{ secrets.GUIDE_MAX_ROWS || '1000' }}
+      GUIDE_MAX_ROWS: ${{ secrets.GUIDE_MAX_ROWS || '50000' }}
       GUIDE_ONLY_ACTIVE: ${{ secrets.GUIDE_ONLY_ACTIVE || 'true' }}
       GUIDE_ONLY_UNFINISHED: ${{ secrets.GUIDE_ONLY_UNFINISHED || 'true' }}
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}

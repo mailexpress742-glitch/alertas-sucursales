@@ -85,7 +85,7 @@ class Settings:
     enabled_rules: tuple[str, ...] = ("guide_due_date",)
     guide_due_date_column: str = "fecha_vencimiento"
     guide_lookahead_days: int = 7
-    guide_max_rows: int = 1000
+    guide_max_rows: int = 50000
     guide_only_active: bool = True
     guide_only_unfinished: bool = True
     sucursal_recipients_file: Path = ROOT_DIR / "config" / "sucursal_recipients.json"
@@ -130,7 +130,7 @@ class Settings:
             enabled_rules=_split_csv(os.getenv("ENABLED_RULES"), ("guide_due_date",)),
             guide_due_date_column=os.getenv("GUIDE_DUE_DATE_COLUMN", "fecha_vencimiento"),
             guide_lookahead_days=_int_from_env(os.getenv("GUIDE_LOOKAHEAD_DAYS"), 7) or 7,
-            guide_max_rows=_int_from_env(os.getenv("GUIDE_MAX_ROWS"), 1000) or 1000,
+            guide_max_rows=_int_from_env(os.getenv("GUIDE_MAX_ROWS"), 50000) or 50000,
             guide_only_active=_bool_from_env(os.getenv("GUIDE_ONLY_ACTIVE"), True),
             guide_only_unfinished=_bool_from_env(os.getenv("GUIDE_ONLY_UNFINISHED"), True),
             sucursal_recipients_file=_path_from_env(
