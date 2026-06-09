@@ -45,6 +45,7 @@ jobs:
       GUIDE_ONLY_UNFINISHED: ${{ secrets.GUIDE_ONLY_UNFINISHED || 'true' }}
       SUCURSAL_RECIPIENTS_JSON: ${{ secrets.SUCURSAL_RECIPIENTS_JSON }}
       SUCURSAL_GROUPS_JSON: ${{ secrets.SUCURSAL_GROUPS_JSON }}
+      RUNNER_LOCAL_ENV_FILE: 'C:\Users\SIST03\Documents\Alertas Inteligentes - Sucursales\.env'
       ENVIRONMENT: github_actions
       PYTHONPATH: ${{ github.workspace }}
 
@@ -69,6 +70,40 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Load runner local .env
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $envFile = $env:RUNNER_LOCAL_ENV_FILE
+          if (-not (Test-Path -LiteralPath $envFile)) {
+            Write-Host "Runner local .env not found. Continuing with GitHub secrets/defaults."
+            exit 0
+          }
+
+          @'
+          import os
+          from pathlib import Path
+          from dotenv import dotenv_values
+
+          env_file = Path(os.environ["RUNNER_LOCAL_ENV_FILE"])
+          github_env = Path(os.environ["GITHUB_ENV"])
+          loaded = 0
+
+          with github_env.open("a", encoding="utf-8") as output:
+              for name, value in dotenv_values(env_file).items():
+                  if not name or value is None:
+                      continue
+                  if os.environ.get(name):
+                      continue
+                  delimiter = f"ENV_{name}_EOF"
+                  while delimiter in value:
+                      delimiter += "_X"
+                  output.write(f"{name}<<{delimiter}\n{value}\n{delimiter}\n")
+                  loaded += 1
+
+          print(f"Loaded {loaded} missing value(s) from runner-local .env.")
+          '@ | python -
 
       - name: Run tests
         run: |

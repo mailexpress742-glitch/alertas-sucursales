@@ -148,3 +148,11 @@ Cuando el self-hosted runner esta instalado en Windows, el workflow usa:
 ```yaml
 runs-on: [self-hosted, Windows, X64]
 ```
+
+En este equipo, el workflow tambien intenta completar valores faltantes desde:
+
+```text
+C:\Users\SIST03\Documents\Alertas Inteligentes - Sucursales\.env
+```
+
+Esto permite mantener la contraseña de la base fuera de GitHub. Los secrets de GitHub y las opciones elegidas al ejecutar el workflow tienen prioridad; el `.env` local solo completa variables vacias.
