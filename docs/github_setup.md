@@ -142,3 +142,9 @@ Para produccion hay dos caminos:
 
 - Instalar un self-hosted runner en una maquina/servidor que tenga acceso a `mexreplica.epresis.com:3345`.
 - Pedir a infraestructura que permita el acceso desde GitHub Actions a la base o publicar un endpoint intermedio seguro.
+
+Cuando el self-hosted runner esta instalado en Windows, el workflow usa:
+
+```yaml
+runs-on: [self-hosted, Windows, X64]
+```
