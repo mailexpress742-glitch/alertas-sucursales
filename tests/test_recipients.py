@@ -223,8 +223,10 @@ def test_email_sender_consolidates_guide_details_in_one_branch_email(tmp_path: P
     assert "CRITICO (Hoy o vencidas) - Mostrando 1 de 1 registros" in html
     assert "PROXIMAS 48 HORAS - Mostrando 1 de 1 registros" in html
     assert "PROXIMA SEMANA - Mostrando 1 de 1 registros" in html
-    assert all(label in html for label in ("Guia", "Remito", "Cliente", "Pactada", "Estado"))
-    assert all(value in html for value in ("G-1", "G-2", "G-3", "R-1", "R-2", "R-3"))
+    assert all(label in html for label in ("Guia", "Cliente", "Pactada", "Estado"))
+    assert "Remito" not in html
+    assert all(value in html for value in ("G-1", "G-2", "G-3"))
+    assert all(value not in html for value in ("R-1", "R-2", "R-3"))
 
 
 def test_email_sender_limits_guide_details_to_thirty_per_section(tmp_path: Path) -> None:
@@ -265,11 +267,9 @@ def test_email_sender_limits_guide_details_to_thirty_per_section(tmp_path: Path)
     assert "CRITICO (Hoy o vencidas) - Mostrando 30 de 35 registros" in html
     assert "G-030" in html
     assert "G-031" not in html
-    assert "R-030" in html
-    assert "R-031" not in html
 
 
-def test_email_sender_does_not_show_tracking_as_remito(tmp_path: Path) -> None:
+def test_email_sender_does_not_show_remito_or_tracking_columns(tmp_path: Path) -> None:
     settings = Settings(
         email_dry_run=True,
         email_preview_dir=tmp_path,
@@ -289,6 +289,7 @@ def test_email_sender_does_not_show_tracking_as_remito(tmp_path: Path) -> None:
         metadata={
             "branch_title": "Sucursal San Rafael",
             "semaphore": "critical",
+            "remito": "NO-USAR-REMITO",
             "tracking": "NO-USAR-COMO-REMITO",
             "cliente": "Cliente 1",
             "fecha_pactada_date": "2026-06-09",
@@ -301,6 +302,8 @@ def test_email_sender_does_not_show_tracking_as_remito(tmp_path: Path) -> None:
     html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
 
     assert "103842782" in html
+    assert "Remito" not in html
+    assert "NO-USAR-REMITO" not in html
     assert "NO-USAR-COMO-REMITO" not in html
 
 

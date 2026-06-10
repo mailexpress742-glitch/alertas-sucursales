@@ -38,21 +38,21 @@ def main() -> None:
             "sucursal_id": 44,
             "codigo_sucursal": "MEXSR",
             "cliente": "MAILEXPRESS SAN RAFAEL",
-            "base_id": 103842782,
+            "base_id": 103832782,
         },
         {
             "label": "CBA",
             "sucursal_id": 42,
             "codigo_sucursal": "MEXRIOIV",
             "cliente": "MAILEXPRESS RIO IV",
-            "base_id": 103852782,
+            "base_id": 103837782,
         },
         {
             "label": "GA",
             "sucursal_id": 128,
             "codigo_sucursal": "MEXGALVEAR",
             "cliente": "MAILEXPRESS GENERAL ALVEAR",
-            "base_id": 103862782,
+            "base_id": 103842782,
         },
     ]
     status_samples = [
@@ -90,7 +90,6 @@ def main() -> None:
                         "record_reference": str(guide_id),
                         "sucursal_id": branch["sucursal_id"],
                         "codigo_sucursal": branch["codigo_sucursal"],
-                        "remito": "",
                         "cliente": branch["cliente"],
                         "fecha_pactada_date": (today + timedelta(days=days_until_due)).isoformat(),
                         "days_until_due": days_until_due,

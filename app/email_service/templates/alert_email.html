@@ -41,9 +41,8 @@
             <thead>
               <tr style="background:{{ section.color }};color:#ffffff;">
                 {% if is_consolidated_guide %}
-                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:14%;">Guia</th>
-                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:14%;">Remito</th>
-                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:32%;">Cliente</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:18%;">Guia</th>
+                <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:42%;">Cliente</th>
                 <th style="padding:10px;text-align:left;border-right:2px solid rgba(255,255,255,0.75);width:16%;">Pactada</th>
                 <th style="padding:10px;text-align:left;">Estado</th>
                 {% else %}
@@ -60,7 +59,6 @@
               <tr style="border-bottom:1px solid #d9e2ec;">
                 {% if is_consolidated_guide %}
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.record_reference }}</td>
-                <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.metadata.get("remito") or alert.metadata.get("nro_remito") or alert.metadata.get("numero_remito") or "-" }}</td>
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;">{{ alert.metadata.get("cliente") or alert.metadata.get("cliente_nombre") or alert.metadata.get("nombre_cliente") or alert.metadata.get("remitente") or alert.metadata.get("destinatario") or "-" }}</td>
                 <td style="padding:10px;border-right:2px solid #d9e2ec;vertical-align:top;white-space:nowrap;">{{ alert.metadata.get("fecha_pactada_date") or alert.metadata.get("fecha_pactada") or "-" }}</td>
                 <td style="padding:10px;vertical-align:top;">{{ alert.metadata.get("estado") or alert.metadata.get("estado_descripcion") or alert.metadata.get("estado_nombre") or alert.metadata.get("status") or alert.metadata.get("estado_id") or "-" }}</td>
