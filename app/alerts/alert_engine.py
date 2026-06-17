@@ -136,6 +136,7 @@ class AlertEngine:
                 self.db_connection,
                 due_date_column=self.settings.guide_due_date_column,
                 lookahead_days=self.settings.guide_lookahead_days,
+                lookback_days=self.settings.guide_lookback_days,
                 max_rows=self.settings.guide_max_rows,
                 only_active=self.settings.guide_only_active,
                 only_unfinished=self.settings.guide_only_unfinished,

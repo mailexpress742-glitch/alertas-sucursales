@@ -38,6 +38,7 @@ def test_branch_recipient_resolver_uses_database_mail_then_fallback(tmp_path: Pa
     settings = Settings(
         mail_to=("fallback@example.com",),
         sucursal_recipients_file=tmp_path / "missing.json",
+        use_database_recipients=True,
     )
     resolver = BranchRecipientResolver(settings)
 
@@ -46,6 +47,16 @@ def test_branch_recipient_resolver_uses_database_mail_then_fallback(tmp_path: Pa
         "b@example.com",
     )
     assert resolver.resolve({"codigo_sucursal": "sin-mail"}) == ("fallback@example.com",)
+
+
+def test_branch_recipient_resolver_ignores_database_mail_by_default(tmp_path: Path) -> None:
+    settings = Settings(
+        mail_to=("fallback@example.com",),
+        sucursal_recipients_file=tmp_path / "missing.json",
+    )
+    resolver = BranchRecipientResolver(settings)
+
+    assert resolver.resolve({"sucursal_mail": "db@example.com"}) == ("fallback@example.com",)
 
 
 def test_email_sender_batches_alerts_by_recipients() -> None:

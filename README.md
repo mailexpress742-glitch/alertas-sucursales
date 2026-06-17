@@ -110,11 +110,13 @@ Variables principales:
 - `EMAIL_DRY_RUN`: si es `true`, genera preview local y no envia mails reales.
 - `EMAIL_PREVIEW_DIR`: carpeta donde se guardan previews de mail en dry-run.
 - `MAIL_FROM`, `MAIL_TO`.
+- `USE_DATABASE_RECIPIENTS`: si es `true`, permite usar `sucursal.mail` como fallback. Por defecto `false`.
 - `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`.
 - `ENABLED_RULES`: por defecto `guide_due_date`.
-- `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fecha_vencimiento`.
+- `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fechaplanilla`.
 - `GUIDE_LOOKAHEAD_DAYS`: dias futuros para incluir en el semaforo. Por defecto `7`.
-- `GUIDE_MAX_ROWS`: maximo de guias a traer por ejecucion para calcular los totales por categoria. Por defecto `50000`; el cuerpo del mail muestra hasta 30 por categoria.
+- `GUIDE_LOOKBACK_DAYS`: dias vencidos hacia atras para incluir en el semaforo. Por defecto `15`.
+- `GUIDE_MAX_ROWS`: maximo de guias a traer por ejecucion para calcular los totales por categoria. Por defecto `5000`; el cuerpo del mail muestra hasta 30 por categoria.
 - `GUIDE_ONLY_ACTIVE`: si es `true`, excluye guias inactivas.
 - `GUIDE_ONLY_UNFINISHED`: si es `true`, excluye guias finalizadas.
 - `SUCURSAL_RECIPIENTS_FILE`: archivo local JSON para mapear sucursales a mails.
@@ -149,7 +151,9 @@ La regla activa por defecto es `guide_due_date`. Consulta guias/retiros desde `r
 La columna de fecha pactada se configura con:
 
 ```env
-GUIDE_DUE_DATE_COLUMN=fecha_vencimiento
+GUIDE_DUE_DATE_COLUMN=fechaplanilla
+GUIDE_LOOKAHEAD_DAYS=7
+GUIDE_LOOKBACK_DAYS=15
 ```
 
 Si la fecha pactada real es otra columna de `retiro`, cambiar ese valor por una de estas columnas permitidas: `fecha_retiro`, `fecha_vencimiento`, `fechaplanilla`, `fecha_hora`, `fechaUltimoEstado`, `fecha_hora_entrega`, `fechaRepactacion`.
@@ -160,7 +164,7 @@ Cada alerta puede enviarse a mails distintos segun la sucursal. El sistema resue
 
 1. Archivo JSON local indicado por `SUCURSAL_RECIPIENTS_FILE`.
 2. Variable `SUCURSAL_RECIPIENTS_JSON`, util para GitHub Secrets.
-3. Columna `sucursal.mail` de la base.
+3. Columna `sucursal.mail` de la base, solo si `USE_DATABASE_RECIPIENTS=true`.
 4. Fallback general `MAIL_TO`.
 
 Ejemplo local en `config/sucursal_recipients.json`:
@@ -213,7 +217,7 @@ Para configurar credenciales:
 
 1. Ir al repositorio en GitHub.
 2. Entrar en `Settings > Secrets and variables > Actions`.
-3. Crear cada secret requerido: `DB_TYPE`, `DB_SERVER`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `DB_DRIVER`, `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_USE_TLS`, `EMAIL_DRY_RUN`, `MAIL_FROM`, `MAIL_TO`, `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`, `ENABLED_RULES`, `GUIDE_DUE_DATE_COLUMN`, `GUIDE_LOOKAHEAD_DAYS`, `GUIDE_MAX_ROWS`, `GUIDE_ONLY_ACTIVE`, `GUIDE_ONLY_UNFINISHED`, `SUCURSAL_RECIPIENTS_JSON`, `SUCURSAL_GROUPS_JSON`.
+3. Crear cada secret requerido: `DB_TYPE`, `DB_SERVER`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `DB_DRIVER`, `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_USE_TLS`, `EMAIL_DRY_RUN`, `MAIL_FROM`, `MAIL_TO`, `USE_DATABASE_RECIPIENTS`, `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`, `ENABLED_RULES`, `GUIDE_DUE_DATE_COLUMN`, `GUIDE_LOOKAHEAD_DAYS`, `GUIDE_LOOKBACK_DAYS`, `GUIDE_MAX_ROWS`, `GUIDE_ONLY_ACTIVE`, `GUIDE_ONLY_UNFINISHED`, `SUCURSAL_RECIPIENTS_JSON`, `SUCURSAL_GROUPS_JSON`.
 4. Ejecutar manualmente desde la pestaña `Actions` o esperar el cron.
 
 Para la primera prueba en GitHub, usar `workflow_dispatch` con `email_dry_run=true`. Si se generan alertas, descargar el artifact `email-previews` desde la corrida del workflow.

@@ -71,7 +71,7 @@ GUIDE_DUE_DATE_COLUMN
 Valor actual por defecto:
 
 ```text
-fecha_vencimiento
+fechaplanilla
 ```
 
 Columnas permitidas:
@@ -97,6 +97,12 @@ Cada guia se clasifica segun la diferencia entre la fecha pactada y la fecha de 
 | Proxima semana | Fecha pactada entre 3 y 7 dias | Planificacion operativa semanal |
 
 Las guias con fecha pactada a mas de 7 dias no se incluyen en la alerta.
+
+Para evitar consultas pesadas sobre todo el historico, las guias vencidas se buscan dentro de una ventana configurable hacia atras. Valor por defecto:
+
+```text
+GUIDE_LOOKBACK_DAYS=15
+```
 
 ## 6. Consolidacion por sucursal
 
@@ -163,7 +169,7 @@ Los destinatarios se resuelven por sucursal en este orden:
 
 1. Archivo local `config/sucursal_recipients.json`.
 2. Variable/secret `SUCURSAL_RECIPIENTS_JSON`.
-3. Campo `sucursal.mail` si viene desde la base.
+3. Campo `sucursal.mail` si viene desde la base y `USE_DATABASE_RECIPIENTS=true`.
 4. Lista general `MAIL_TO`.
 
 Para pruebas se puede usar una lista general de destinatarios.
@@ -327,9 +333,11 @@ Recomendaciones:
 | `DB_PORT` | Puerto de conexion |
 | `MAIL_FROM` | Remitente del correo |
 | `MAIL_TO` | Destinatarios generales |
+| `USE_DATABASE_RECIPIENTS` | Habilita usar `sucursal.mail` como fallback |
 | `EMAIL_DRY_RUN` | Modo preview sin envio real |
 | `GUIDE_DUE_DATE_COLUMN` | Columna de fecha pactada |
 | `GUIDE_LOOKAHEAD_DAYS` | Dias futuros a incluir |
+| `GUIDE_LOOKBACK_DAYS` | Dias vencidos hacia atras a consultar |
 | `GUIDE_MAX_ROWS` | Maximo de filas leidas para calcular totales |
 | `SUCURSAL_RECIPIENTS_JSON` | Destinatarios por sucursal en GitHub |
 | `SUCURSAL_GROUPS_JSON` | Nombres operativos por sucursal en GitHub |

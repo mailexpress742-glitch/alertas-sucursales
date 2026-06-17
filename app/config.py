@@ -79,13 +79,15 @@ class Settings:
     email_preview_dir: Path = ROOT_DIR / "data" / "email_previews"
     mail_from: str = ""
     mail_to: tuple[str, ...] = ()
+    use_database_recipients: bool = False
 
     alert_days_threshold: int = 7
     alert_amount_threshold: float = 100000.0
     enabled_rules: tuple[str, ...] = ("guide_due_date",)
-    guide_due_date_column: str = "fecha_vencimiento"
+    guide_due_date_column: str = "fechaplanilla"
     guide_lookahead_days: int = 7
-    guide_max_rows: int = 50000
+    guide_lookback_days: int = 15
+    guide_max_rows: int = 5000
     guide_only_active: bool = True
     guide_only_unfinished: bool = True
     sucursal_recipients_file: Path = ROOT_DIR / "config" / "sucursal_recipients.json"
@@ -123,14 +125,16 @@ class Settings:
             ),
             mail_from=os.getenv("MAIL_FROM", ""),
             mail_to=_split_recipients(os.getenv("MAIL_TO")),
+            use_database_recipients=_bool_from_env(os.getenv("USE_DATABASE_RECIPIENTS"), False),
             alert_days_threshold=_int_from_env(os.getenv("ALERT_DAYS_THRESHOLD"), 7) or 7,
             alert_amount_threshold=_float_from_env(
                 os.getenv("ALERT_AMOUNT_THRESHOLD"), 100000.0
             ),
             enabled_rules=_split_csv(os.getenv("ENABLED_RULES"), ("guide_due_date",)),
-            guide_due_date_column=os.getenv("GUIDE_DUE_DATE_COLUMN", "fecha_vencimiento"),
+            guide_due_date_column=os.getenv("GUIDE_DUE_DATE_COLUMN", "fechaplanilla"),
             guide_lookahead_days=_int_from_env(os.getenv("GUIDE_LOOKAHEAD_DAYS"), 7) or 7,
-            guide_max_rows=_int_from_env(os.getenv("GUIDE_MAX_ROWS"), 50000) or 50000,
+            guide_lookback_days=_int_from_env(os.getenv("GUIDE_LOOKBACK_DAYS"), 15) or 15,
+            guide_max_rows=_int_from_env(os.getenv("GUIDE_MAX_ROWS"), 5000) or 5000,
             guide_only_active=_bool_from_env(os.getenv("GUIDE_ONLY_ACTIVE"), True),
             guide_only_unfinished=_bool_from_env(os.getenv("GUIDE_ONLY_UNFINISHED"), True),
             sucursal_recipients_file=_path_from_env(

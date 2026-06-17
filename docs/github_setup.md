@@ -38,13 +38,15 @@ DB_DRIVER=pymysql
 
 MAIL_TO=gpereyra@mailexpress.com.ar,airisarri@mailexpress.com.ar,mzera@mailexpress.com.ar
 MAIL_FROM=mailexpress742@gmail.com
+USE_DATABASE_RECIPIENTS=false
 
 EMAIL_DRY_RUN=true
 
 ENABLED_RULES=guide_due_date
-GUIDE_DUE_DATE_COLUMN=fecha_vencimiento
+GUIDE_DUE_DATE_COLUMN=fechaplanilla
 GUIDE_LOOKAHEAD_DAYS=7
-GUIDE_MAX_ROWS=50000
+GUIDE_LOOKBACK_DAYS=15
+GUIDE_MAX_ROWS=5000
 GUIDE_ONLY_ACTIVE=true
 GUIDE_ONLY_UNFINISHED=true
 

@@ -29,9 +29,10 @@ class BranchRecipientResolver:
             if recipients:
                 return recipients
 
-        db_recipients = self._split_addresses(row.get("sucursal_mail") or row.get("mail"))
-        if db_recipients:
-            return db_recipients
+        if self.settings.use_database_recipients:
+            db_recipients = self._split_addresses(row.get("sucursal_mail") or row.get("mail"))
+            if db_recipients:
+                return db_recipients
 
         return self.settings.mail_to
 
@@ -95,4 +96,3 @@ class BranchRecipientResolver:
     @staticmethod
     def _normalize_key(value: Any) -> str:
         return str(value or "").strip().lower()
-
