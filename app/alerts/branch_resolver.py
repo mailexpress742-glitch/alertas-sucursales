@@ -35,14 +35,19 @@ class BranchNameResolver:
     def _load_mapping(self) -> dict[str, str]:
         raw_mapping: dict[str, Any] = {}
 
+        if self.settings.sucursal_groups_file.exists():
+            raw_mapping = self._load_mapping_file(self.settings.sucursal_groups_file)
+
         if self.settings.sucursal_groups_json:
             try:
-                raw_mapping = json.loads(self.settings.sucursal_groups_json)
+                env_mapping = json.loads(self.settings.sucursal_groups_json)
             except json.JSONDecodeError:
                 logger.exception("Invalid SUCURSAL_GROUPS_JSON. Ignoring mapping.")
-
-        if not raw_mapping and self.settings.sucursal_groups_file.exists():
-            raw_mapping = self._load_mapping_file(self.settings.sucursal_groups_file)
+            else:
+                if isinstance(env_mapping, dict):
+                    raw_mapping.update(env_mapping)
+                else:
+                    logger.error("SUCURSAL_GROUPS_JSON must contain a JSON object")
 
         normalized: dict[str, str] = {}
         for branch_key, branch_name in raw_mapping.items():
@@ -69,4 +74,3 @@ class BranchNameResolver:
     @staticmethod
     def _normalize_key(value: Any) -> str:
         return str(value or "").strip().lower()
-

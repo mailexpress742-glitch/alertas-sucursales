@@ -82,4 +82,4 @@ def test_guide_due_date_rule_classifies_semaphore_sections() -> None:
         "warning",
         "upcoming",
     ]
-    assert alerts[0].metadata["branch_title"] == "SUC DHL-(MEX MZA)"
+    assert alerts[0].metadata["branch_title"] == "Sucursal Mendoza"

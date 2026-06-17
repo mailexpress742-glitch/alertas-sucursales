@@ -316,3 +316,17 @@ def test_branch_name_resolver_uses_group_mapping(tmp_path: Path) -> None:
 
     assert resolver.resolve({"codigo_sucursal": "MEXSR", "sucursal_id": 44}) == "Sucursal San Rafael"
     assert resolver.resolve({"sucursal_id": 42}) == "Sucursal Cba"
+
+
+def test_branch_name_resolver_merges_group_file_with_json(tmp_path: Path) -> None:
+    mapping_file = tmp_path / "groups.json"
+    mapping_file.write_text('{"336": "Sucursal Mendoza"}', encoding="utf-8")
+    settings = Settings(
+        sucursal_groups_file=mapping_file,
+        sucursal_groups_json='{"MEXSR": "Sucursal San Rafael"}',
+    )
+
+    resolver = BranchNameResolver(settings)
+
+    assert resolver.resolve({"sucursal_id": 336}) == "Sucursal Mendoza"
+    assert resolver.resolve({"codigo_sucursal": "MEXSR"}) == "Sucursal San Rafael"

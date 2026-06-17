@@ -38,21 +38,18 @@ def main() -> None:
             "sucursal_id": 44,
             "codigo_sucursal": "MEXSR",
             "cliente": "MAILEXPRESS SAN RAFAEL",
-            "base_id": 103832782,
         },
         {
             "label": "CBA",
             "sucursal_id": 42,
             "codigo_sucursal": "MEXRIOIV",
             "cliente": "MAILEXPRESS RIO IV",
-            "base_id": 103837782,
         },
         {
             "label": "GA",
             "sucursal_id": 128,
             "codigo_sucursal": "MEXGALVEAR",
             "cliente": "MAILEXPRESS GENERAL ALVEAR",
-            "base_id": 103842782,
         },
     ]
     status_samples = [
@@ -61,21 +58,18 @@ def main() -> None:
             "days_until_due": 0,
             "estado": "DESPACHADO A SUCURSAL",
             "count": 35,
-            "offset": 0,
         },
         {
             "label": "ADVERTENCIA",
             "days_until_due": 2,
             "estado": "RC-EN RUTA PARA SU ENTREGA",
             "count": 33,
-            "offset": 1000,
         },
         {
             "label": "PROXIMA",
             "days_until_due": 5,
             "estado": "DESP-Despachado",
             "count": 31,
-            "offset": 2000,
         },
     ]
 
@@ -84,7 +78,7 @@ def main() -> None:
         for status in status_samples:
             days_until_due = status["days_until_due"]
             for index in range(1, status["count"] + 1):
-                guide_id = branch["base_id"] + status["offset"] + index - 1
+                guide_id = f"DEMO-{branch['label']}-{status['label']}-{index:03d}"
                 rows.append(
                     {
                         "record_reference": str(guide_id),

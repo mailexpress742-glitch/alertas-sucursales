@@ -176,7 +176,7 @@ Mapa funcional actual:
 
 | Identificador | Nombre operativo |
 | --- | --- |
-| `1123`, `MEX CASA CENTRAL`, `1`, `MEX DORREGO` | Sucursal Mendoza |
+| `1123`, `MEX CASA CENTRAL`, `1`, `MEX DORREGO`, `336`, `SUC DHL-(MEX MZA)` | Sucursal Mendoza |
 | `44`, `MEXSR` | Sucursal San Rafael |
 | `527`, `MEX VILLAMARIA`, `42`, `MEXRIOIV` | Sucursal Cba |
 | `49`, `MEXSF` | Sucursal Santa Fe |
