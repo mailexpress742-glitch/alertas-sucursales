@@ -114,7 +114,7 @@ Variables principales:
 - `FORCE_SEND_ALERTS`: si es `true`, ignora el historial y reenvia las alertas detectadas en esa ejecucion. Es util para pruebas manuales desde GitHub.
 - `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`.
 - `ENABLED_RULES`: por defecto `guide_due_date`.
-- `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fechaplanilla`.
+- `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fecha_hora_entrega`.
 - `GUIDE_LOOKAHEAD_DAYS`: dias futuros para incluir en el semaforo. Por defecto `7`.
 - `GUIDE_LOOKBACK_DAYS`: dias vencidos hacia atras para incluir en el semaforo. Por defecto `15`.
 - `GUIDE_MAX_ROWS`: maximo de guias a traer por ejecucion para calcular los totales por categoria. Por defecto `5000`; el cuerpo del mail muestra hasta 30 por categoria.
@@ -152,7 +152,7 @@ La regla activa por defecto es `guide_due_date`. Consulta guias/retiros desde `r
 La columna de fecha pactada se configura con:
 
 ```env
-GUIDE_DUE_DATE_COLUMN=fechaplanilla
+GUIDE_DUE_DATE_COLUMN=fecha_hora_entrega
 GUIDE_LOOKAHEAD_DAYS=7
 GUIDE_LOOKBACK_DAYS=15
 ```

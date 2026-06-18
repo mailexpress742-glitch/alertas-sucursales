@@ -93,10 +93,10 @@ SELECT
 FROM retiro r
 INNER JOIN sucursal s ON s.id = r.sucursal_id
 WHERE r.{due_date_column} IS NOT NULL
-  AND r.{due_date_column} >= DATE_SUB(CURRENT_DATE, INTERVAL :lookback_days DAY)
+  AND r.{due_date_column} >= DATE_ADD(CURRENT_DATE, INTERVAL :window_start_days DAY)
   AND r.{due_date_column} < DATE_ADD(CURRENT_DATE, INTERVAL :window_end_days DAY)
   {status_filters}
-ORDER BY DATE(r.{due_date_column}) ASC, s.codigo_sucursal ASC, r.id ASC
+ORDER BY ABS(DATEDIFF(DATE(r.{due_date_column}), CURRENT_DATE)) ASC, s.codigo_sucursal ASC, r.id ASC
 LIMIT :max_rows
 """
 
@@ -116,14 +116,26 @@ def get_guides_due_for_week(
         due_date_column=column,
         status_filters=status_filters,
     )
-    return db.execute_select(
-        sql,
-        {
-            "lookback_days": lookback_days,
-            "window_end_days": lookahead_days + 1,
-            "max_rows": max_rows,
-        },
-    )
+    windows = [
+        {"window_start_days": -lookback_days, "window_end_days": 1},
+        {"window_start_days": 1, "window_end_days": min(lookahead_days + 1, 3)},
+        {"window_start_days": 3, "window_end_days": lookahead_days + 1},
+    ]
+
+    rows: list[dict] = []
+    for window in windows:
+        if window["window_start_days"] >= window["window_end_days"]:
+            continue
+        rows.extend(
+            db.execute_select(
+                sql,
+                {
+                    **window,
+                    "max_rows": max_rows,
+                },
+            )
+        )
+    return rows
 
 
 def _validate_guide_date_column(column: str) -> str:

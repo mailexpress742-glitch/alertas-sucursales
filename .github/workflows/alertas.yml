@@ -35,6 +35,19 @@ on:
         options:
           - "true"
           - "false"
+      guide_due_date_column:
+        description: "Columna de retiro usada como fecha pactada"
+        required: true
+        default: "fecha_hora_entrega"
+        type: choice
+        options:
+          - "fecha_hora_entrega"
+          - "fechaplanilla"
+          - "fecha_vencimiento"
+          - "fecha_retiro"
+          - "fecha_hora"
+          - "fechaUltimoEstado"
+          - "fechaRepactacion"
   schedule:
     - cron: "15 11 * * 1-5"
 
@@ -68,7 +81,7 @@ jobs:
       ALERT_DAYS_THRESHOLD: ${{ secrets.ALERT_DAYS_THRESHOLD || '7' }}
       ALERT_AMOUNT_THRESHOLD: ${{ secrets.ALERT_AMOUNT_THRESHOLD || '100000' }}
       ENABLED_RULES: ${{ secrets.ENABLED_RULES || 'guide_due_date' }}
-      GUIDE_DUE_DATE_COLUMN: ${{ secrets.GUIDE_DUE_DATE_COLUMN || 'fechaplanilla' }}
+      GUIDE_DUE_DATE_COLUMN: ${{ github.event.inputs.guide_due_date_column || secrets.GUIDE_DUE_DATE_COLUMN || 'fecha_hora_entrega' }}
       GUIDE_LOOKAHEAD_DAYS: ${{ secrets.GUIDE_LOOKAHEAD_DAYS || '7' }}
       GUIDE_LOOKBACK_DAYS: ${{ secrets.GUIDE_LOOKBACK_DAYS || '15' }}
       GUIDE_MAX_ROWS: ${{ secrets.GUIDE_MAX_ROWS || '5000' }}
