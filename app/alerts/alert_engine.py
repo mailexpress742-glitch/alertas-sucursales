@@ -74,7 +74,11 @@ class AlertEngine:
 
         if self.history:
             self.history.record_detected(unique_alerts)
-            alerts_to_send = self.history.filter_unsent(unique_alerts)
+            if self.settings.force_send_alerts:
+                logger.info("FORCE_SEND_ALERTS enabled. Ignoring sent history for this run.")
+                alerts_to_send = unique_alerts
+            else:
+                alerts_to_send = self.history.filter_unsent(unique_alerts)
         else:
             alerts_to_send = unique_alerts
 

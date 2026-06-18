@@ -61,12 +61,17 @@ class EmailSender:
     def _send_message(self, message: EmailMessage) -> None:
         try:
             context = ssl.create_default_context()
+            logger.info(
+                "Sending alert email via SMTP: subject=%s to=%s",
+                message.get("Subject", ""),
+                message.get("To", ""),
+            )
             if self.settings.smtp_port == 465:
                 with smtplib.SMTP_SSL(
                     self.settings.smtp_server, self.settings.smtp_port, context=context
                 ) as smtp:
                     self._login_if_needed(smtp)
-                    smtp.send_message(message)
+                    refused = smtp.send_message(message)
             else:
                 with smtplib.SMTP(self.settings.smtp_server, self.settings.smtp_port) as smtp:
                     smtp.ehlo()
@@ -74,7 +79,21 @@ class EmailSender:
                         smtp.starttls(context=context)
                         smtp.ehlo()
                     self._login_if_needed(smtp)
-                    smtp.send_message(message)
+                    refused = smtp.send_message(message)
+
+            if refused:
+                logger.error(
+                    "SMTP refused recipient(s) for subject=%s: %s",
+                    message.get("Subject", ""),
+                    refused,
+                )
+                raise smtplib.SMTPRecipientsRefused(refused)
+
+            logger.info(
+                "SMTP accepted alert email: subject=%s to=%s",
+                message.get("Subject", ""),
+                message.get("To", ""),
+            )
 
         except smtplib.SMTPException:
             logger.exception("SMTP error while sending alert email")

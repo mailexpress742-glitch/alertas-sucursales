@@ -82,3 +82,27 @@ def test_alert_engine_avoids_duplicates_by_alert_id(tmp_path: Path) -> None:
     assert second_summary.new_alerts == 0
     assert second_summary.duplicates_skipped == 2
     assert second_sender.sent_alerts == []
+
+
+def test_alert_engine_force_send_ignores_sent_history(tmp_path: Path) -> None:
+    history_path = tmp_path / "history.json"
+
+    first_sender = FakeEmailSender()
+    first_engine = AlertEngine(_settings(), FakeDatabase(), first_sender, AlertHistory(history_path))
+    first_engine.run()
+
+    force_settings = Settings(
+        alert_days_threshold=5,
+        alert_amount_threshold=1000,
+        mail_to=("ops@example.com",),
+        enabled_rules=("pending_items", "amount_threshold"),
+        force_send_alerts=True,
+    )
+    second_sender = FakeEmailSender()
+    second_engine = AlertEngine(force_settings, FakeDatabase(), second_sender, AlertHistory(history_path))
+    second_summary = second_engine.run()
+
+    assert second_summary.total_alerts == 2
+    assert second_summary.new_alerts == 2
+    assert second_summary.duplicates_skipped == 0
+    assert len(second_sender.sent_alerts[0]) == 2

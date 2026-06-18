@@ -111,6 +111,7 @@ Variables principales:
 - `EMAIL_PREVIEW_DIR`: carpeta donde se guardan previews de mail en dry-run.
 - `MAIL_FROM`, `MAIL_TO`.
 - `USE_DATABASE_RECIPIENTS`: si es `true`, permite usar `sucursal.mail` como fallback. Por defecto `false`.
+- `FORCE_SEND_ALERTS`: si es `true`, ignora el historial y reenvia las alertas detectadas en esa ejecucion. Es util para pruebas manuales desde GitHub.
 - `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`.
 - `ENABLED_RULES`: por defecto `guide_due_date`.
 - `GUIDE_DUE_DATE_COLUMN`: columna de `retiro` usada como fecha pactada. Por defecto `fechaplanilla`.
@@ -204,6 +205,7 @@ El workflow esta en `.github/workflows/alertas.yml` e incluye:
 - `workflow_dispatch` para ejecucion manual.
 - `schedule` con cron `15 11 * * 1-5`.
 - Input manual `email_dry_run` para probar sin enviar mails.
+- Input manual `force_send_alerts` para reenviar aunque el runner ya tenga historial de alertas enviadas.
 - Python 3.11.
 - Instalacion condicional del driver ODBC de SQL Server solo si `DB_TYPE` es SQL Server.
 - Instalacion de dependencias.

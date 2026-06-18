@@ -80,6 +80,7 @@ class Settings:
     mail_from: str = ""
     mail_to: tuple[str, ...] = ()
     use_database_recipients: bool = False
+    force_send_alerts: bool = False
 
     alert_days_threshold: int = 7
     alert_amount_threshold: float = 100000.0
@@ -126,6 +127,7 @@ class Settings:
             mail_from=os.getenv("MAIL_FROM", ""),
             mail_to=_split_recipients(os.getenv("MAIL_TO")),
             use_database_recipients=_bool_from_env(os.getenv("USE_DATABASE_RECIPIENTS"), False),
+            force_send_alerts=_bool_from_env(os.getenv("FORCE_SEND_ALERTS"), False),
             alert_days_threshold=_int_from_env(os.getenv("ALERT_DAYS_THRESHOLD"), 7) or 7,
             alert_amount_threshold=_float_from_env(
                 os.getenv("ALERT_AMOUNT_THRESHOLD"), 100000.0

@@ -27,6 +27,14 @@ on:
         options:
           - "true"
           - "false"
+      force_send_alerts:
+        description: "Ignorar historial y reenviar alertas en esta ejecucion manual"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
   schedule:
     - cron: "15 11 * * 1-5"
 
@@ -56,6 +64,7 @@ jobs:
       MAIL_FROM: ${{ secrets.MAIL_FROM || secrets.SMTP_USER }}
       MAIL_TO: ${{ secrets.MAIL_TO || secrets.REPORT_EMAILS || 'gpereyra@mailexpress.com.ar,airisarri@mailexpress.com.ar,mzera@mailexpress.com.ar' }}
       USE_DATABASE_RECIPIENTS: ${{ secrets.USE_DATABASE_RECIPIENTS || 'false' }}
+      FORCE_SEND_ALERTS: ${{ github.event.inputs.force_send_alerts || secrets.FORCE_SEND_ALERTS || 'false' }}
       ALERT_DAYS_THRESHOLD: ${{ secrets.ALERT_DAYS_THRESHOLD || '7' }}
       ALERT_AMOUNT_THRESHOLD: ${{ secrets.ALERT_AMOUNT_THRESHOLD || '100000' }}
       ENABLED_RULES: ${{ secrets.ENABLED_RULES || 'guide_due_date' }}
