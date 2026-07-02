@@ -1,6 +1,6 @@
 # Alertas Inteligentes
 
-Proyecto Python para consultar una base de datos read-only, evaluar reglas de negocio configurables y enviar alertas automaticas por mail. Esta preparado para correr manualmente en local y de forma programada desde GitHub Actions.
+Proyecto Python para consultar una base de datos read-only, evaluar reglas de negocio configurables y enviar alertas por mail. Esta preparado para correr manualmente en local o desde GitHub Actions.
 
 ## Arquitectura
 
@@ -14,7 +14,7 @@ La solucion separa responsabilidades para evitar un script monolitico:
 - `app/email_service/`: envio SMTP y template HTML.
 - `app/main.py`: punto de entrada principal.
 - `tests/`: pruebas unitarias con datos simulados.
-- `.github/workflows/alertas.yml`: ejecucion manual y cron desde GitHub Actions.
+- `.github/workflows/alertas.yml`: ejecucion manual desde GitHub Actions.
 
 ## Estructura
 
@@ -203,7 +203,7 @@ Importante para GitHub Actions: los runners hospedados son temporales. El histor
 El workflow esta en `.github/workflows/alertas.yml` e incluye:
 
 - `workflow_dispatch` para ejecucion manual.
-- `schedule` con cron `15 11 * * 1-5`.
+- La ejecucion programada esta desactivada; solo queda disponible la ejecucion manual.
 - Input manual `email_dry_run` para probar sin enviar mails.
 - Input manual `force_send_alerts` para reenviar aunque el runner ya tenga historial de alertas enviadas.
 - Python 3.11.
@@ -213,14 +213,14 @@ El workflow esta en `.github/workflows/alertas.yml` e incluye:
 - Ejecucion de `python -m app.main`.
 - Publicacion de previews como artifact cuando `EMAIL_DRY_RUN=true`.
 
-El cron de GitHub Actions usa horario UTC. Para Argentina, `11:15 UTC` equivale a `08:15` de Argentina durante UTC-3. Revisar la conversion si cambia el horario deseado.
+Si se reactiva el cron de GitHub Actions, recordar que usa horario UTC. Para Argentina, `11:15 UTC` equivale a `08:15` de Argentina durante UTC-3.
 
 Para configurar credenciales:
 
 1. Ir al repositorio en GitHub.
 2. Entrar en `Settings > Secrets and variables > Actions`.
 3. Crear cada secret requerido: `DB_TYPE`, `DB_SERVER`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `DB_DRIVER`, `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_USE_TLS`, `EMAIL_DRY_RUN`, `MAIL_FROM`, `MAIL_TO`, `USE_DATABASE_RECIPIENTS`, `ALERT_DAYS_THRESHOLD`, `ALERT_AMOUNT_THRESHOLD`, `ENABLED_RULES`, `GUIDE_DUE_DATE_COLUMN`, `GUIDE_LOOKAHEAD_DAYS`, `GUIDE_LOOKBACK_DAYS`, `GUIDE_MAX_ROWS`, `GUIDE_ONLY_ACTIVE`, `GUIDE_ONLY_UNFINISHED`, `SUCURSAL_RECIPIENTS_JSON`, `SUCURSAL_GROUPS_JSON`.
-4. Ejecutar manualmente desde la pestaña `Actions` o esperar el cron.
+4. Ejecutar manualmente desde la pestaña `Actions`.
 
 Para la primera prueba en GitHub, usar `workflow_dispatch` con `email_dry_run=true`. Si se generan alertas, descargar el artifact `email-previews` desde la corrida del workflow.
 

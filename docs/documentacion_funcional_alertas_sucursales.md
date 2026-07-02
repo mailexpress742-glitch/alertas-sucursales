@@ -16,7 +16,7 @@ El sistema contempla:
 - Clasificacion por semaforo segun la fecha pactada.
 - Consolidacion de alertas por sucursal.
 - Envio de correos a destinatarios configurados.
-- Ejecucion manual o programada desde GitHub Actions.
+- Ejecucion manual desde GitHub Actions. La ejecucion programada esta desactivada actualmente.
 - Modo de prueba con previews HTML y correo de muestra.
 
 Fuera del alcance actual:
@@ -198,13 +198,7 @@ Si una sucursal no esta mapeada, se usa el codigo, descripcion o ID disponible e
 
 ### Ejecucion programada
 
-El workflow de GitHub Actions esta configurado con cron:
-
-```text
-15 11 * * 1-5
-```
-
-Equivale aproximadamente a las 08:15 de Argentina, de lunes a viernes.
+La ejecucion programada esta desactivada actualmente. Para reactivarla, se debe volver a agregar un bloque `schedule` al workflow de GitHub Actions.
 
 ### Ejecucion manual
 

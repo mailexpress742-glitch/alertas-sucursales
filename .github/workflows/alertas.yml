@@ -48,9 +48,6 @@ on:
           - "fecha_hora"
           - "fechaUltimoEstado"
           - "fechaRepactacion"
-  schedule:
-    - cron: "15 11 * * 1-5"
-
 jobs:
   run-alerts:
     runs-on: [self-hosted, Windows, X64]
